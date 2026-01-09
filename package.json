@@ -1,0 +1,57 @@
+{
+	"name": "@umd-mith/iiif-media-parsers",
+	"version": "0.1.0",
+	"description": "TypeScript utilities for parsing IIIF media fragments, ranges, and WebVTT speaker annotations",
+	"keywords": [
+		"iiif",
+		"media-fragments",
+		"w3c",
+		"typescript",
+		"annotation",
+		"webvtt",
+		"range",
+		"presentation-api"
+	],
+	"homepage": "https://github.com/umd-mith/iiif-media-parsers#readme",
+	"bugs": {
+		"url": "https://github.com/umd-mith/iiif-media-parsers/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/umd-mith/iiif-media-parsers.git"
+	},
+	"license": "MIT",
+	"author": "Maryland Institute for Technology in the Humanities (MITH)",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsc",
+		"test": "vitest",
+		"test:ci": "vitest run",
+		"type-check": "tsc --noEmit",
+		"prepublishOnly": "pnpm run build && pnpm run test:ci"
+	},
+	"devDependencies": {
+		"typescript": "^5.7.0",
+		"vitest": "^3.0.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
+	"engines": {
+		"node": ">=20.0.0"
+	}
+}
