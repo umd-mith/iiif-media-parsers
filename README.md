@@ -9,24 +9,22 @@ fragments from annotation targets.
 
 ## Why This Package?
 
-Existing IIIF libraries provide structure traversal but not the **temporal data**
-needed for A/V player integration:
-
-| Library                                                | What it provides                 | What's missing                         |
-| ------------------------------------------------------ | -------------------------------- | -------------------------------------- |
-| [@iiif/parser](https://github.com/IIIF-Commons/parser) | Range traversal, v2→v3 upgrade   | No `{startTime, endTime}` extraction   |
-| [cozy-iiif](https://github.com/rsimon/cozy-iiif)       | `getTableOfContents()` hierarchy | Labels only, no timing data            |
-| [vtt-utils](https://github.com/VoctroLabs/vtt-utils)   | `getSpeakers()` from WebVTT      | Returns `String[]` only, no timestamps |
-
-This package fills the gap by returning **playable, seekable segments**:
+When building A/V players for IIIF content, you often need **temporal data**—start
+and end times for chapters, speaker segments, and annotation targets. This package
+extracts that timing information into simple objects ready for player integration.
 
 ```typescript
-// Other libraries: hierarchy without timing
-cozyManifest.getTableOfContents(); // → { label, children }
+parseRanges(manifest);
+// → [{ id, label: 'Act I', startTime: 0, endTime: 302.05 }, ...]
 
-// This library: timing for player integration
-parseRanges(manifest); // → [{ label, startTime: 0, endTime: 302.05 }, ...]
+parseSpeakers(vttContent);
+// → [{ speaker: 'Narrator', startTime: 0, endTime: 45 }, ...]
 ```
+
+For general IIIF manifest handling, consider the excellent
+[@iiif/parser](https://github.com/IIIF-Commons/parser) and
+[cozy-iiif](https://github.com/rsimon/cozy-iiif) libraries. This package
+focuses specifically on the time-based media use case.
 
 ## Features
 
