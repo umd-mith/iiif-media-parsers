@@ -99,6 +99,22 @@ describe('parseSpeakers', () => {
 			expect(segments[0]?.speaker).toBe('John Doe');
 		});
 
+		it('should handle voice tags with CSS classes per W3C spec', () => {
+			const vttContent = `WEBVTT
+
+00:00:00.000 --> 00:00:05.000
+<v.loud John Doe>Shouting!
+
+00:00:05.000 --> 00:00:10.000
+<v.whisper.italic Jane Smith>Whispering`;
+
+			const segments = parseSpeakers(vttContent);
+
+			expect(segments).toHaveLength(2);
+			expect(segments[0]?.speaker).toBe('John Doe');
+			expect(segments[1]?.speaker).toBe('Jane Smith');
+		});
+
 		it('should ignore cues without voice tags', () => {
 			const vttContent = `WEBVTT
 

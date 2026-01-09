@@ -245,6 +245,7 @@ function skipCueLines(lines: string[], startIndex: number): number {
  * Extracts speaker name from WebVTT voice tag.
  *
  * Per W3C spec, voice tags use format: <v Speaker Name>Text
+ * Also supports CSS class syntax: <v.classname Speaker Name>Text
  * The voice tag doesn't need to be closed if it spans the entire cue.
  *
  * @param text - Cue text (may contain voice tag)
@@ -253,12 +254,16 @@ function skipCueLines(lines: string[], startIndex: number): number {
  * @example
  * ```typescript
  * extractSpeakerFromVoiceTag('<v John Doe>Hello!') // => 'John Doe'
+ * extractSpeakerFromVoiceTag('<v.loud John Doe>Hello!') // => 'John Doe'
  * extractSpeakerFromVoiceTag('Regular text') // => null
  * ```
+ *
+ * @see https://www.w3.org/TR/webvtt1/#webvtt-cue-voice-span
  */
 function extractSpeakerFromVoiceTag(text: string): string | null {
-	// Match <v Speaker Name> at start of text
-	const match = text.match(/^<v\s+([^>]+)>/i);
+	// Match <v[.class]* Speaker Name> at start of text
+	// Supports optional CSS classes per W3C WebVTT spec
+	const match = text.match(/^<v(?:\.[a-zA-Z0-9_-]+)*\s+([^>]+)>/i);
 	if (match) {
 		return match[1]!.trim();
 	}
