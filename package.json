@@ -41,11 +41,33 @@
 		"test": "vitest",
 		"test:ci": "vitest run",
 		"type-check": "tsc --noEmit",
+		"lint": "eslint src/",
+		"lint:fix": "eslint src/ --fix",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
 		"release": "./scripts/release.sh",
-		"prepublishOnly": "pnpm run build && pnpm run test:ci"
+		"prepublishOnly": "pnpm run build && pnpm run test:ci",
+		"prepare": "husky"
 	},
+	"lint-staged": {
+		"*.{ts,js}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{json,md,yml,yaml}": [
+			"prettier --write"
+		]
+	},
+	"sideEffects": false,
 	"devDependencies": {
+		"@eslint/js": "^9.39.2",
+		"eslint": "^9.39.2",
+		"eslint-config-prettier": "^10.1.8",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"prettier": "^3.7.4",
 		"typescript": "^5.7.0",
+		"typescript-eslint": "^8.52.0",
 		"vitest": "^3.0.0"
 	},
 	"publishConfig": {

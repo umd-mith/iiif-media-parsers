@@ -200,7 +200,9 @@ function parseSpecificResourceTarget(
  * // => { source: 'https://example.org/canvas', temporal: { start: 10, end: 20 } }
  * ```
  */
-export function parseAnnotationTarget(target: AnnotationTargetInput): ParsedAnnotationTarget | null {
+export function parseAnnotationTarget(
+	target: AnnotationTargetInput
+): ParsedAnnotationTarget | null {
 	if (!target) {
 		return null;
 	}

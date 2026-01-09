@@ -24,11 +24,7 @@ npm install @umd-mith/iiif-media-parsers
 ## Quick Start
 
 ```typescript
-import {
-  parseRanges,
-  parseSpeakers,
-  parseAnnotationTarget
-} from '@umd-mith/iiif-media-parsers';
+import { parseRanges, parseSpeakers, parseAnnotationTarget } from '@umd-mith/iiif-media-parsers';
 
 // Parse chapters from IIIF manifest
 const chapters = parseRanges(manifest);
@@ -53,22 +49,22 @@ Parses IIIF Presentation API v3 Range structures into chapter objects.
 import { parseRanges } from '@umd-mith/iiif-media-parsers';
 
 const manifest = {
-  id: 'https://example.org/manifest',
-  type: 'Manifest',
-  structures: [
-    {
-      id: 'range-1',
-      type: 'Range',
-      label: { en: ['Introduction'] },
-      items: [{ id: 'canvas#t=0,30', type: 'Canvas' }]
-    },
-    {
-      id: 'range-2',
-      type: 'Range',
-      label: { en: ['Main Content'] },
-      items: [{ id: 'canvas#t=30,120', type: 'Canvas' }]
-    }
-  ]
+	id: 'https://example.org/manifest',
+	type: 'Manifest',
+	structures: [
+		{
+			id: 'range-1',
+			type: 'Range',
+			label: { en: ['Introduction'] },
+			items: [{ id: 'canvas#t=0,30', type: 'Canvas' }]
+		},
+		{
+			id: 'range-2',
+			type: 'Range',
+			label: { en: ['Main Content'] },
+			items: [{ id: 'canvas#t=30,120', type: 'Canvas' }]
+		}
+	]
 };
 
 const chapters = parseRanges(manifest);
@@ -79,6 +75,7 @@ const chapters = parseRanges(manifest);
 ```
 
 **Parameters:**
+
 - `manifest` - IIIF Presentation API v3 Manifest object
 
 **Returns:** `Chapter[]` - Array of chapters sorted by startTime
@@ -109,6 +106,7 @@ const segments = parseSpeakers(vtt);
 ```
 
 **Parameters:**
+
 - `vttContent` - Raw WebVTT file content as string
 
 **Returns:** `SpeakerSegment[]` - Array of speaker segments sorted by startTime
@@ -130,14 +128,15 @@ const result2 = parseAnnotationTarget('https://example.org/canvas#xywh=100,200,5
 
 // SpecificResource with FragmentSelector
 const result3 = parseAnnotationTarget({
-  type: 'SpecificResource',
-  source: 'https://example.org/canvas',
-  selector: { type: 'FragmentSelector', value: 't=10,20' }
+	type: 'SpecificResource',
+	source: 'https://example.org/canvas',
+	selector: { type: 'FragmentSelector', value: 't=10,20' }
 });
 // => { source: 'https://example.org/canvas', temporal: { start: 10, end: 20 } }
 ```
 
 **Parameters:**
+
 - `target` - String URI or SpecificResource object
 
 **Returns:** `ParsedAnnotationTarget | null`
@@ -173,12 +172,12 @@ parseMediaFragment('https://example.org/image#xywh=percent:10,20,30,40');
 
 ```typescript
 interface Chapter {
-  id: string;           // Unique identifier from IIIF Range
-  label: string;        // Human-readable chapter label
-  startTime: number;    // Start time in seconds
-  endTime: number;      // End time in seconds
-  thumbnail?: string;   // Optional thumbnail URL
-  metadata?: Record<string, string>;  // Optional key-value metadata
+	id: string; // Unique identifier from IIIF Range
+	label: string; // Human-readable chapter label
+	startTime: number; // Start time in seconds
+	endTime: number; // End time in seconds
+	thumbnail?: string; // Optional thumbnail URL
+	metadata?: Record<string, string>; // Optional key-value metadata
 }
 ```
 
@@ -186,9 +185,9 @@ interface Chapter {
 
 ```typescript
 interface SpeakerSegment {
-  speaker: string;      // Speaker name from <v> tag
-  startTime: number;    // Start time in seconds
-  endTime: number;      // End time in seconds
+	speaker: string; // Speaker name from <v> tag
+	startTime: number; // Start time in seconds
+	endTime: number; // End time in seconds
 }
 ```
 
@@ -196,8 +195,8 @@ interface SpeakerSegment {
 
 ```typescript
 interface TemporalFragment {
-  start: number;        // Start time in seconds
-  end?: number;         // End time in seconds (optional per W3C spec)
+	start: number; // Start time in seconds
+	end?: number; // End time in seconds (optional per W3C spec)
 }
 ```
 
@@ -205,11 +204,11 @@ interface TemporalFragment {
 
 ```typescript
 interface SpatialFragment {
-  x: number;            // X coordinate
-  y: number;            // Y coordinate
-  width: number;        // Width
-  height: number;       // Height
-  unit: 'pixel' | 'percent';  // Coordinate unit
+	x: number; // X coordinate
+	y: number; // Y coordinate
+	width: number; // Width
+	height: number; // Height
+	unit: 'pixel' | 'percent'; // Coordinate unit
 }
 ```
 
@@ -217,9 +216,9 @@ interface SpatialFragment {
 
 ```typescript
 interface ParsedAnnotationTarget {
-  source: string;                // Canvas/source URI without fragment
-  temporal?: TemporalFragment;   // Temporal fragment if present
-  spatial?: SpatialFragment;     // Spatial fragment if present
+	source: string; // Canvas/source URI without fragment
+	temporal?: TemporalFragment; // Temporal fragment if present
+	spatial?: SpatialFragment; // Spatial fragment if present
 }
 ```
 
@@ -233,19 +232,19 @@ Build a chapter-based timeline for oral history recordings:
 import { parseRanges, parseSpeakers } from '@umd-mith/iiif-media-parsers';
 
 // Load IIIF manifest and VTT transcript
-const manifest = await fetch(manifestUrl).then(r => r.json());
-const vtt = await fetch(transcriptUrl).then(r => r.text());
+const manifest = await fetch(manifestUrl).then((r) => r.json());
+const vtt = await fetch(transcriptUrl).then((r) => r.text());
 
 // Extract navigation data
 const chapters = parseRanges(manifest);
 const speakers = parseSpeakers(vtt);
 
 // Build timeline UI
-chapters.forEach(chapter => {
-  const chapterSpeakers = speakers.filter(
-    s => s.startTime >= chapter.startTime && s.startTime < chapter.endTime
-  );
-  console.log(`${chapter.label}: ${chapterSpeakers.map(s => s.speaker).join(', ')}`);
+chapters.forEach((chapter) => {
+	const chapterSpeakers = speakers.filter(
+		(s) => s.startTime >= chapter.startTime && s.startTime < chapter.endTime
+	);
+	console.log(`${chapter.label}: ${chapterSpeakers.map((s) => s.speaker).join(', ')}`);
 });
 ```
 
@@ -258,14 +257,14 @@ import { parseAnnotationTarget } from '@umd-mith/iiif-media-parsers';
 
 // From IIIF annotation
 const annotation = {
-  type: 'Annotation',
-  target: 'https://example.org/canvas#t=45.5,52.3'
+	type: 'Annotation',
+	target: 'https://example.org/canvas#t=45.5,52.3'
 };
 
 const parsed = parseAnnotationTarget(annotation.target);
 if (parsed?.temporal) {
-  videoPlayer.currentTime = parsed.temporal.start;
-  videoPlayer.play();
+	videoPlayer.currentTime = parsed.temporal.start;
+	videoPlayer.play();
 }
 ```
 
@@ -326,6 +325,7 @@ Contributions are welcome! Please:
 5. Submit a pull request
 
 For AI-assisted contributions, include commit trailers:
+
 ```
 Assisted-by: Claude <noreply@anthropic.com>
 ```
