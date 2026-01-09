@@ -12,10 +12,11 @@ export type {
 	SpeakerSegment,
 	TemporalFragment,
 	SpatialFragment,
-	ParsedAnnotationTarget
+	ParsedAnnotationTarget,
+	AnnotationTargetInput
 } from './types.js';
 
 // Parsers
 export { parseRanges } from './parseRanges.js';
 export { parseSpeakers } from './parseSpeakers.js';
-export { parseAnnotationTarget } from './parseAnnotationTarget.js';
+export { parseAnnotationTarget, parseMediaFragment } from './parseAnnotationTarget.js';

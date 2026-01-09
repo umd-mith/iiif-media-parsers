@@ -35,7 +35,7 @@ export interface Chapter {
 }
 
 /**
- * Speaker segment data structure parsed from VTT NOTE directives
+ * Speaker segment data structure parsed from VTT voice tags
  *
  * Represents a temporal segment with speaker identification for semantic styling.
  *
@@ -56,6 +56,10 @@ export interface SpeakerSegment {
  * Temporal fragment parsed from W3C Media Fragment URI
  *
  * Represents time-based targeting for annotations on audio/video content.
+ * Supports all W3C Media Fragments temporal patterns:
+ * - `#t=10,20` (start and end)
+ * - `#t=10` (start only, end optional)
+ * - `#t=,20` (from beginning to end time)
  *
  * @see https://www.w3.org/TR/media-frags/#naming-time
  */
@@ -71,6 +75,9 @@ export interface TemporalFragment {
  * Spatial fragment parsed from W3C Media Fragment URI
  *
  * Represents region-based targeting for annotations on images/video.
+ * Supports pixel and percentage coordinate systems per W3C spec:
+ * - `#xywh=100,200,50,75` (pixels, default)
+ * - `#xywh=percent:10,20,30,40` (percentages)
  *
  * @see https://www.w3.org/TR/media-frags/#naming-space
  */
@@ -94,7 +101,9 @@ export interface SpatialFragment {
 /**
  * Parsed annotation target with optional temporal and spatial fragments
  *
- * Result of parsing IIIF annotation targets.
+ * Result of parsing IIIF annotation targets, supporting both:
+ * - Simple string URIs: `"https://example.org/canvas#t=10,20"`
+ * - SpecificResource with FragmentSelector
  *
  * @see https://iiif.io/api/presentation/3.0/#annotation
  */
@@ -108,3 +117,19 @@ export interface ParsedAnnotationTarget {
 	/** Spatial fragment if present (#xywh=...) */
 	spatial?: SpatialFragment;
 }
+
+/**
+ * Input type for annotation targets.
+ * Can be a simple string URI or a SpecificResource object.
+ */
+export type AnnotationTargetInput =
+	| string
+	| {
+			type: 'SpecificResource';
+			source: string | { id: string; type?: string };
+			selector?: {
+				type: string;
+				value?: string;
+				conformsTo?: string;
+			};
+	  };
