@@ -63,7 +63,18 @@ interface IIIFRangeItem {
  * nested ranges into a linear array of chapters.
  *
  * @param manifest - IIIF Presentation API v3 Manifest
- * @returns Array of Chapter objects sorted by startTime
+ * @returns Array of Chapter objects sorted by startTime (may be empty)
+ *
+ * @remarks
+ * Returns an empty array when:
+ * - Manifest has no `structures` property
+ * - No ranges contain temporal fragments (`#t=...`)
+ *
+ * Ranges are silently skipped when:
+ * - No Canvas items with temporal fragments
+ * - Temporal fragment is malformed (non-numeric, negative values)
+ * - Time range is invalid (`end <= start`)
+ * - Open-ended fragment (`#t=10`) without canvas duration to resolve end time
  *
  * @example
  * ```typescript

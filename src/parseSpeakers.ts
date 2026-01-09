@@ -31,7 +31,17 @@ interface ParsedCue {
  * Groups consecutive cues by speaker and calculates continuous segments.
  *
  * @param vttContent - Raw WebVTT file content
- * @returns Array of SpeakerSegment objects sorted by startTime
+ * @returns Array of SpeakerSegment objects sorted by startTime (may be empty)
+ *
+ * @remarks
+ * Returns an empty array when:
+ * - Input is null, undefined, or empty/whitespace-only string
+ * - VTT contains no cues with voice tags (`<v Speaker>`)
+ * - Voice tags don't appear at the start of cue text
+ *
+ * Cues are silently skipped when:
+ * - Timing line is malformed (not `HH:MM:SS.mmm --> HH:MM:SS.mmm`)
+ * - No voice tag present in cue text
  *
  * @example
  * ```typescript

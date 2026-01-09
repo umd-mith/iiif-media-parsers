@@ -122,7 +122,22 @@ function parseSpatialFromFragment(fragment: string): SpatialFragment | undefined
  * - Float precision supported: `#t=10.5,25.75`
  *
  * @param uri - URI potentially containing media fragments
- * @returns Parsed fragment data with source URI
+ * @returns Parsed fragment data with source URI (always returns an object)
+ *
+ * @remarks
+ * Always returns a `ParsedAnnotationTarget` object with `source` property.
+ *
+ * The `temporal` property is undefined when:
+ * - No `#t=` fragment present in URI
+ * - Fragment is malformed (`#t=invalid`, `#t=`)
+ * - Values are negative (`#t=-5,20`)
+ * - Time range is invalid (`#t=20,10` where end <= start)
+ *
+ * The `spatial` property is undefined when:
+ * - No `#xywh=` fragment present in URI
+ * - Fragment is incomplete (`#xywh=100,200`)
+ * - Values are negative
+ * - Percentage values exceed bounds (>100 or region outside canvas)
  *
  * @example
  * ```typescript
@@ -131,6 +146,9 @@ function parseSpatialFromFragment(fragment: string): SpatialFragment | undefined
  *
  * parseMediaFragment('https://example.org/canvas#t=10')
  * // => { source: 'https://example.org/canvas', temporal: { start: 10 } }
+ *
+ * parseMediaFragment('https://example.org/canvas#t=20,10')
+ * // => { source: 'https://example.org/canvas', temporal: undefined } // invalid range
  * ```
  *
  * @see https://www.w3.org/TR/media-frags/#naming-time
@@ -200,7 +218,17 @@ function parseSpecificResourceTarget(
  * 2. SpecificResource with FragmentSelector
  *
  * @param target - Annotation target (string URI or SpecificResource object)
- * @returns Parsed annotation target or null if invalid
+ * @returns Parsed annotation target, or null if input is invalid
+ *
+ * @remarks
+ * Returns `null` when:
+ * - Input is null, undefined, or empty string
+ * - Input is an object without `type: 'SpecificResource'`
+ *
+ * Returns object with undefined `temporal`/`spatial` when:
+ * - No fragment present in URI or selector
+ * - Fragment is malformed (see {@link parseMediaFragment} for details)
+ * - Non-FragmentSelector types (e.g., PointSelector) - only source is extracted
  *
  * @example String target
  * ```typescript
