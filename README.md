@@ -15,13 +15,39 @@ W3C Media Fragments, and WebVTT speaker annotations.
 - Full TypeScript support with strict types
 - ESM-only, tree-shakeable
 
-## Installation
+## Getting Started
+
+### Prerequisites
+
+- **Node.js 20+** (check with `node --version`)
+- **ESM project** - your `package.json` must have `"type": "module"`
+
+### Installation
 
 ```bash
 npm install @umd-mith/iiif-media-parsers
 ```
 
-## Quick Start
+### Verify Installation
+
+Create a test file to confirm the package works:
+
+```typescript
+// test-install.ts
+import { parseMediaFragment } from '@umd-mith/iiif-media-parsers';
+
+const result = parseMediaFragment('https://example.org/canvas#t=10,20');
+console.log(result);
+// Should print: { source: 'https://example.org/canvas', temporal: { start: 10, end: 20 } }
+```
+
+Run it:
+
+```bash
+npx tsx test-install.ts
+```
+
+### Quick Start
 
 ```typescript
 import { parseRanges, parseSpeakers, parseAnnotationTarget } from '@umd-mith/iiif-media-parsers';
@@ -314,6 +340,24 @@ Following [Apache](https://www.apache.org/legal/generative-tooling.html) and
 [OpenInfra](https://openinfra.org/legal/ai-policy/) guidance, we use `Assisted-by:`
 commit trailers for ongoing contributions.
 
+## Development
+
+```bash
+# Clone and install
+git clone https://github.com/umd-mith/iiif-media-parsers.git
+cd iiif-media-parsers
+pnpm install
+
+# Run tests (watch mode)
+pnpm test
+
+# Run all checks
+pnpm lint && pnpm format:check && pnpm type-check && pnpm test:ci
+
+# Build
+pnpm build
+```
+
 ## Contributing
 
 Contributions are welcome! Please:
@@ -321,8 +365,10 @@ Contributions are welcome! Please:
 1. Fork the repository
 2. Create a feature branch
 3. Write tests for new functionality
-4. Ensure all tests pass (`pnpm test`)
+4. Ensure all checks pass (`pnpm lint && pnpm test`)
 5. Submit a pull request
+
+Pre-commit hooks will automatically lint and format staged files.
 
 For AI-assisted contributions, include commit trailers:
 
