@@ -298,18 +298,19 @@ type CueWithSpeaker = ParsedCue & { speaker: string };
  * @returns Array of speaker segments
  */
 function groupBySpeaker(cues: CueWithSpeaker[]): SpeakerSegment[] {
-	if (cues.length === 0) {
+	const firstCue = cues[0];
+	if (!firstCue) {
 		return [];
 	}
 
 	const segments: SpeakerSegment[] = [];
-	const firstCue = cues[0];
 	let currentSpeaker = firstCue.speaker;
 	let currentStart = firstCue.startTime;
 	let currentEnd = firstCue.endTime;
 
 	for (let i = 1; i < cues.length; i++) {
 		const cue = cues[i];
+		if (!cue) continue; // TypeScript: noUncheckedIndexedAccess guard
 
 		if (cue.speaker === currentSpeaker && cue.startTime === currentEnd) {
 			// Same speaker, consecutive timing - extend segment

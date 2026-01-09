@@ -15,7 +15,7 @@ import type { Chapter } from './types.js';
 interface IIIFManifest {
 	'@context'?: string | string[];
 	id: string;
-	type: string;
+	type: 'Manifest';
 	label?: Record<string, string[]>;
 	structures?: IIIFRange[];
 	items?: IIIFCanvas[];
@@ -27,7 +27,7 @@ interface IIIFManifest {
  */
 interface IIIFCanvas {
 	id: string;
-	type: string;
+	type: 'Canvas';
 	duration?: number;
 	[key: string]: unknown;
 }
@@ -37,7 +37,7 @@ interface IIIFCanvas {
  */
 interface IIIFRange {
 	id: string;
-	type: string;
+	type: 'Range';
 	label?: Record<string, string[]>;
 	items?: (IIIFRangeItem | IIIFRange)[];
 	thumbnail?: Array<{ id: string; type: string }>;
@@ -52,7 +52,7 @@ interface IIIFRange {
  */
 interface IIIFRangeItem {
 	id: string;
-	type: string;
+	type: 'Canvas';
 }
 
 /**

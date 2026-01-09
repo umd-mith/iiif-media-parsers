@@ -126,9 +126,9 @@ export type AnnotationTargetInput =
 	| string
 	| {
 			type: 'SpecificResource';
-			source: string | { id: string; type?: string };
+			source: string | { id: string; type?: 'Canvas' | string };
 			selector?: {
-				type: string;
+				type: 'FragmentSelector' | string;
 				value?: string;
 				conformsTo?: string;
 			};
