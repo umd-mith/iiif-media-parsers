@@ -87,6 +87,18 @@ describe('parseSpeakers', () => {
 			expect(segments[0]?.speaker).toBe('John Doe');
 		});
 
+		it('should normalize internal whitespace per W3C spec', () => {
+			const vttContent = `WEBVTT
+
+00:00:00.000 --> 00:00:05.000
+<v John    Doe>Content with multiple internal spaces`;
+
+			const segments = parseSpeakers(vttContent);
+
+			expect(segments).toHaveLength(1);
+			expect(segments[0]?.speaker).toBe('John Doe');
+		});
+
 		it('should handle case-insensitive voice tag', () => {
 			const vttContent = `WEBVTT
 

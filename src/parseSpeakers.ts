@@ -265,7 +265,8 @@ function extractSpeakerFromVoiceTag(text: string): string | null {
 	// Supports optional CSS classes per W3C WebVTT spec
 	const match = text.match(/^<v(?:\.[a-zA-Z0-9_-]+)*\s+([^>]+)>/i);
 	if (match) {
-		return match[1]!.trim();
+		// Per W3C spec: normalize internal whitespace to single spaces
+		return match[1]!.trim().replace(/\s+/g, ' ');
 	}
 
 	return null;
