@@ -58,6 +58,12 @@ function parseTemporalFromFragment(fragment: string): TemporalFragment | undefin
 		return undefined;
 	}
 
+	// Reject invalid temporal ordering: end must be greater than start
+	// This matches the validation in parseRanges.ts extractTemporalFragment
+	if (end !== undefined && end <= start) {
+		return undefined;
+	}
+
 	return { start, end };
 }
 
@@ -89,6 +95,18 @@ function parseSpatialFromFragment(fragment: string): SpatialFragment | undefined
 	// All four values must be valid
 	if (x === undefined || y === undefined || width === undefined || height === undefined) {
 		return undefined;
+	}
+
+	// For percentage units, validate bounds (0-100) and that region fits within canvas
+	if (unit === 'percent') {
+		// Individual values must be <= 100
+		if (x > 100 || y > 100 || width > 100 || height > 100) {
+			return undefined;
+		}
+		// Region must fit within bounds (x + width <= 100, y + height <= 100)
+		if (x + width > 100 || y + height > 100) {
+			return undefined;
+		}
 	}
 
 	return { x, y, width, height, unit };

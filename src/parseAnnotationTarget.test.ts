@@ -67,6 +67,27 @@ describe('parseMediaFragment', () => {
 			expect(result.temporal).toEqual({ start: 5, end: undefined });
 		});
 
+		it('should reject reversed time range: #t=20,10', () => {
+			const result = parseMediaFragment('https://example.org/canvas#t=20,10');
+
+			expect(result.source).toBe('https://example.org/canvas');
+			expect(result.temporal).toBeUndefined();
+		});
+
+		it('should reject zero-duration fragment: #t=10,10', () => {
+			const result = parseMediaFragment('https://example.org/canvas#t=10,10');
+
+			expect(result.source).toBe('https://example.org/canvas');
+			expect(result.temporal).toBeUndefined();
+		});
+
+		it('should handle URI with query parameters', () => {
+			const result = parseMediaFragment('https://example.org/canvas?quality=high#t=10,20');
+
+			expect(result.source).toBe('https://example.org/canvas?quality=high');
+			expect(result.temporal).toEqual({ start: 10, end: 20 });
+		});
+
 		it('should handle URI without fragment', () => {
 			const result = parseMediaFragment('https://example.org/canvas');
 
@@ -131,6 +152,20 @@ describe('parseMediaFragment', () => {
 
 		it('should return undefined spatial for invalid values: #xywh=a,b,c,d', () => {
 			const result = parseMediaFragment('https://example.org/canvas#xywh=a,b,c,d');
+
+			expect(result.spatial).toBeUndefined();
+		});
+
+		it('should reject percentage values over 100: #xywh=percent:150,20,30,40', () => {
+			const result = parseMediaFragment('https://example.org/canvas#xywh=percent:150,20,30,40');
+
+			expect(result.source).toBe('https://example.org/canvas');
+			expect(result.spatial).toBeUndefined();
+		});
+
+		it('should reject when percentage coordinates exceed bounds', () => {
+			// x + width > 100
+			const result = parseMediaFragment('https://example.org/canvas#xywh=percent:80,20,30,40');
 
 			expect(result.spatial).toBeUndefined();
 		});
@@ -300,6 +335,41 @@ describe('parseAnnotationTarget', () => {
 			expect(result).toEqual({
 				source: 'https://example.org/canvas/1'
 			});
+		});
+
+		it('should handle FragmentSelector with empty value', () => {
+			const target = {
+				type: 'SpecificResource' as const,
+				source: 'https://example.org/canvas/1',
+				selector: {
+					type: 'FragmentSelector',
+					value: ''
+				}
+			};
+
+			const result = parseAnnotationTarget(target);
+
+			expect(result).toEqual({
+				source: 'https://example.org/canvas/1'
+			});
+			expect(result?.temporal).toBeUndefined();
+			expect(result?.spatial).toBeUndefined();
+		});
+
+		it('should handle FragmentSelector with just "t=" (empty temporal)', () => {
+			const target = {
+				type: 'SpecificResource' as const,
+				source: 'https://example.org/canvas/1',
+				selector: {
+					type: 'FragmentSelector',
+					value: 't='
+				}
+			};
+
+			const result = parseAnnotationTarget(target);
+
+			expect(result?.source).toBe('https://example.org/canvas/1');
+			expect(result?.temporal).toBeUndefined();
 		});
 	});
 

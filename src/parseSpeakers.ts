@@ -58,8 +58,10 @@ export function parseSpeakers(vttContent: string): SpeakerSegment[] {
 	// Parse all cues with speaker information
 	const cues = parseVTTCues(vttContent);
 
-	// Filter to only cues with speakers
-	const speakerCues = cues.filter((cue) => cue.speaker !== null);
+	// Filter to only cues with speakers (type predicate narrows to non-null speaker)
+	const speakerCues = cues.filter(
+		(cue): cue is ParsedCue & { speaker: string } => cue.speaker !== null
+	);
 
 	// Group consecutive cues by speaker
 	const segments = groupBySpeaker(speakerCues);
@@ -273,25 +275,31 @@ function extractSpeakerFromVoiceTag(text: string): string | null {
 }
 
 /**
+ * Cue with guaranteed non-null speaker (after filtering)
+ */
+type CueWithSpeaker = ParsedCue & { speaker: string };
+
+/**
  * Groups consecutive cues by speaker into segments.
  *
  * Merges consecutive cues from the same speaker into continuous segments.
  *
- * @param cues - Array of parsed cues with speakers
+ * @param cues - Array of parsed cues with guaranteed non-null speakers
  * @returns Array of speaker segments
  */
-function groupBySpeaker(cues: ParsedCue[]): SpeakerSegment[] {
+function groupBySpeaker(cues: CueWithSpeaker[]): SpeakerSegment[] {
 	if (cues.length === 0) {
 		return [];
 	}
 
 	const segments: SpeakerSegment[] = [];
-	let currentSpeaker = cues[0]!.speaker!;
-	let currentStart = cues[0]!.startTime;
-	let currentEnd = cues[0]!.endTime;
+	const firstCue = cues[0];
+	let currentSpeaker = firstCue.speaker;
+	let currentStart = firstCue.startTime;
+	let currentEnd = firstCue.endTime;
 
 	for (let i = 1; i < cues.length; i++) {
-		const cue = cues[i]!;
+		const cue = cues[i];
 
 		if (cue.speaker === currentSpeaker && cue.startTime === currentEnd) {
 			// Same speaker, consecutive timing - extend segment
@@ -305,7 +313,7 @@ function groupBySpeaker(cues: ParsedCue[]): SpeakerSegment[] {
 			});
 
 			// Start new segment
-			currentSpeaker = cue.speaker!;
+			currentSpeaker = cue.speaker;
 			currentStart = cue.startTime;
 			currentEnd = cue.endTime;
 		}
