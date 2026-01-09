@@ -3,15 +3,14 @@
 [![CI](https://github.com/umd-mith/iiif-media-parsers/actions/workflows/ci.yml/badge.svg)](https://github.com/umd-mith/iiif-media-parsers/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@umd-mith/iiif-media-parsers)](https://www.npmjs.com/package/@umd-mith/iiif-media-parsers)
 
-Timing-focused utilities for IIIF time-based media—extracting chapters with
-temporal bounds from Range structures, speaker segments from WebVTT, and media
-fragments from annotation targets.
+Utilities for IIIF time-based media: extract chapters from Range structures,
+speakers from WebVTT, and fragments from annotation targets.
 
 ## Why This Package?
 
-When building A/V players for IIIF content, you often need **temporal data**—start
-and end times for chapters, speaker segments, and annotation targets. This package
-extracts that timing information into simple objects ready for player integration.
+A/V players for IIIF content need **temporal data**—start and end times for
+chapters, speakers, and annotations. This package extracts timing into simple
+objects ready for player integration.
 
 ```typescript
 parseRanges(manifest);
@@ -32,11 +31,11 @@ This package fills the **media-specific gap**: none of the above provide dedicat
 
 ## Features
 
-- **Chapters with timing** - Parse IIIF Range structures into `{startTime, endTime}` data
-- **Speaker segments** - Extract WebVTT voice tags with merged consecutive cues
-- **Annotation targets** - Parse SpecificResource/FragmentSelector with temporal+spatial support
-- Zero runtime dependencies
-- Full TypeScript support with strict types
+- **Chapters** — Parse IIIF Range structures into `{startTime, endTime}` data
+- **Speakers** — Extract WebVTT voice tags, merging consecutive cues
+- **Annotation targets** — Parse SpecificResource/FragmentSelector with temporal and spatial support
+- Zero dependencies
+- Strict TypeScript types
 - ESM-only, tree-shakeable
 - Tested against [IIIF Cookbook](https://iiif.io/api/cookbook/) examples
 
@@ -59,9 +58,9 @@ Once published to npm, you can also install via:
 npm install @umd-mith/iiif-media-parsers
 ```
 
-### Verify Installation
+### Verify
 
-Create a test file to confirm the package works:
+Create a test file:
 
 ```typescript
 // test-install.ts
@@ -137,8 +136,7 @@ const chapters = parseRanges(manifest);
 
 **Returns:** `Chapter[]` - Array of chapters sorted by startTime
 
-**Note:** Open-ended temporal fragments (e.g., `#t=3971.24` without end time) are resolved using
-the referenced canvas's `duration` property. If the canvas has no duration, the range is skipped.
+**Note:** Open-ended fragments (e.g., `#t=3971.24`) use the canvas's `duration` for the end time. Without a duration, the parser skips the range.
 
 ### parseSpeakers(vttContent)
 
@@ -228,7 +226,7 @@ parseMediaFragment('https://example.org/image#xywh=percent:10,20,30,40');
 
 ## Validation & Error Handling
 
-All parsing functions perform validation per W3C and IIIF specifications. Invalid inputs are handled gracefully with predictable `null`/`undefined` returns rather than throwing exceptions.
+All functions validate input per W3C and IIIF specifications, returning `null` or `undefined` for invalid data rather than throwing exceptions.
 
 ### parseRanges
 
@@ -237,7 +235,7 @@ Returns empty array when:
 - Manifest has no `structures` property
 - No ranges contain valid temporal fragments
 
-Ranges are silently skipped when:
+Skips ranges when:
 
 - No Canvas items with `#t=` fragments
 - Temporal fragment malformed (non-numeric, negative values)
@@ -251,7 +249,7 @@ Returns empty array when:
 - Input is null, undefined, or empty/whitespace-only string
 - VTT contains no cues with voice tags (`<v Speaker>`)
 
-Cues are silently skipped when:
+Skips cues when:
 
 - Timing line malformed
 - No voice tag present in cue text
@@ -263,7 +261,7 @@ Returns `null` when:
 - Input is null, undefined, or empty string
 - Object lacks `type: 'SpecificResource'`
 
-Fragment properties are `undefined` when:
+Returns `undefined` for fragment properties when:
 
 - No fragment present in URI or selector
 - Fragment is malformed (`#t=invalid`, `#t=`)
@@ -405,8 +403,8 @@ This library implements:
 
 ## Security Considerations
 
-Labels and metadata from IIIF manifests may contain user-controlled content.
-Always escape output before DOM insertion to prevent XSS:
+IIIF manifest labels and metadata may contain user-controlled content. Escape
+output before DOM insertion to prevent XSS:
 
 ```typescript
 // Safe - uses textContent
@@ -426,16 +424,19 @@ element.appendChild(textNode);
 
 ## AI Assistance
 
-This package was developed using Anthropic's Claude as a generative coding tool,
-with human direction and review.
+We developed this package using Anthropic's Claude as a generative coding tool,
+with human direction and review. Without AI assistance, we would have hoped
+someone else would build this but probably would not have diverted resources to
+implement it ourselves. We remain aware of the many critiques and concerns
+regarding generative AI; this experiment does not invalidate them.
 
 **Process:** AI generated initial implementations, tests, and documentation based
 on W3C and IIIF specifications. Human maintainers directed requirements, reviewed
 all outputs, and take full responsibility for the final code.
 
-**Acknowledgment:** We recognize that AI capabilities derive in part from the
-collective labor of programmers whose public work became training data, and that
-our open-source output depends on proprietary AI infrastructure.
+**Acknowledgment:** AI capabilities derive partly from programmers whose public
+work became training data. Our open-source output depends on proprietary AI
+infrastructure.
 
 Following [Apache](https://www.apache.org/legal/generative-tooling.html) and
 [OpenInfra](https://openinfra.org/legal/ai-policy/) guidance, we use `Assisted-by:`
@@ -461,15 +462,15 @@ pnpm build
 
 ## Contributing
 
-Contributions are welcome! Please:
+Contributions welcome:
 
 1. Fork the repository
 2. Create a feature branch
 3. Write tests for new functionality
-4. Ensure all checks pass (`pnpm lint && pnpm test`)
+4. Ensure checks pass (`pnpm lint && pnpm test`)
 5. Submit a pull request
 
-Pre-commit hooks will automatically lint and format staged files.
+Pre-commit hooks lint and format staged files automatically.
 
 For AI-assisted contributions, include commit trailers:
 
