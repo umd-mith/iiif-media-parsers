@@ -41,6 +41,7 @@
 		"test": "vitest",
 		"test:ci": "vitest run",
 		"type-check": "tsc --noEmit",
+		"release": "./scripts/release.sh",
 		"prepublishOnly": "pnpm run build && pnpm run test:ci"
 	},
 	"devDependencies": {

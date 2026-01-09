@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial release with parsers extracted from Lakeland Digital Archive
 - `parseRanges()` - Parse IIIF Range structures into chapter data
 - `parseSpeakers()` - Extract speaker segments from WebVTT NOTE directives
 - `parseAnnotationTarget()` - Parse W3C Media Fragment URIs (temporal + spatial)
