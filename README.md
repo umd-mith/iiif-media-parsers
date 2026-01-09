@@ -50,6 +50,12 @@ This package fills the **media-specific gap**: none of the above provide dedicat
 ### Installation
 
 ```bash
+npm install github:umd-mith/iiif-media-parsers
+```
+
+Once published to npm, you can also install via:
+
+```bash
 npm install @umd-mith/iiif-media-parsers
 ```
 
