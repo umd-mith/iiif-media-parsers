@@ -195,14 +195,16 @@ function createChapterFromRange(
 	const thumbnail = extractThumbnail(range.thumbnail);
 	const metadata = extractMetadata(range.metadata);
 
-	return {
+	// Build result conditionally (exactOptionalPropertyTypes)
+	const chapter: Chapter = {
 		id: range.id,
 		label,
 		startTime: timing.start,
-		endTime,
-		thumbnail,
-		metadata
+		endTime
 	};
+	if (thumbnail) chapter.thumbnail = thumbnail;
+	if (metadata) chapter.metadata = metadata;
+	return chapter;
 }
 
 /**

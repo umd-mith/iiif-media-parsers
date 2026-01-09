@@ -21,10 +21,14 @@ parseSpeakers(vttContent);
 // → [{ speaker: 'Narrator', startTime: 0, endTime: 45 }, ...]
 ```
 
-For general IIIF manifest handling, consider the excellent
-[@iiif/parser](https://github.com/IIIF-Commons/parser) and
-[cozy-iiif](https://github.com/rsimon/cozy-iiif) libraries. This package
-focuses specifically on the time-based media use case.
+**Related ecosystem packages:**
+
+- [@iiif/presentation-3](https://github.com/IIIF-Commons/presentation-3-types) — TypeScript types for IIIF resources (types only, no runtime)
+- [@iiif/parser](https://github.com/IIIF-Commons/parser) — Traverse, normalize, upgrade IIIF manifests
+- [maniiifest](https://github.com/jptmoore/maniiifest) — Zero-dependency general IIIF parsing
+- [cozy-iiif](https://github.com/rsimon/cozy-iiif) — Lightweight IIIF parsing utilities
+
+This package fills the **media-specific gap**: none of the above provide dedicated W3C Media Fragment parsing or WebVTT speaker extraction.
 
 ## Features
 
@@ -216,6 +220,51 @@ parseMediaFragment('https://example.org/image#xywh=percent:10,20,30,40');
 // => { source: '...', spatial: { ..., unit: 'percent' } }
 ```
 
+## Validation & Error Handling
+
+All parsing functions perform validation per W3C and IIIF specifications. Invalid inputs are handled gracefully with predictable `null`/`undefined` returns rather than throwing exceptions.
+
+### parseRanges
+
+Returns empty array when:
+
+- Manifest has no `structures` property
+- No ranges contain valid temporal fragments
+
+Ranges are silently skipped when:
+
+- No Canvas items with `#t=` fragments
+- Temporal fragment malformed (non-numeric, negative values)
+- Time range invalid (`end <= start`)
+- Open-ended fragment without canvas `duration` to resolve end time
+
+### parseSpeakers
+
+Returns empty array when:
+
+- Input is null, undefined, or empty/whitespace-only string
+- VTT contains no cues with voice tags (`<v Speaker>`)
+
+Cues are silently skipped when:
+
+- Timing line malformed
+- No voice tag present in cue text
+
+### parseAnnotationTarget / parseMediaFragment
+
+Returns `null` when:
+
+- Input is null, undefined, or empty string
+- Object lacks `type: 'SpecificResource'`
+
+Fragment properties are `undefined` when:
+
+- No fragment present in URI or selector
+- Fragment is malformed (`#t=invalid`, `#t=`)
+- Values are negative (`#t=-5,20`)
+- Time range reversed (`#t=20,10` where end <= start)
+- Percentage values exceed bounds (>100 or region outside canvas)
+
 ## Types
 
 ### Chapter
@@ -272,6 +321,12 @@ interface ParsedAnnotationTarget {
 }
 ```
 
+### IIIFResourceType
+
+```typescript
+type IIIFResourceType = 'Canvas' | 'Image' | 'Sound' | 'Video';
+```
+
 ### AnnotationTargetInput
 
 ```typescript
@@ -279,9 +334,9 @@ type AnnotationTargetInput =
 	| string // Simple URI with fragment (e.g., "canvas#t=10,20")
 	| {
 			type: 'SpecificResource';
-			source: string | { id: string; type?: string };
+			source: string | { id: string; type?: IIIFResourceType };
 			selector?: {
-				type: string;
+				type: 'FragmentSelector' | string;
 				value?: string;
 				conformsTo?: string;
 			};

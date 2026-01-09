@@ -64,7 +64,8 @@ function parseTemporalFromFragment(fragment: string): TemporalFragment | undefin
 		return undefined;
 	}
 
-	return { start, end };
+	// Conditionally include end only when defined (exactOptionalPropertyTypes)
+	return end !== undefined ? { start, end } : { start };
 }
 
 /**
@@ -163,11 +164,14 @@ export function parseMediaFragment(uri: string): ParsedAnnotationTarget {
 	const source = uri.substring(0, hashIndex);
 	const fragment = uri.substring(hashIndex + 1);
 
-	return {
-		source,
-		temporal: parseTemporalFromFragment(fragment),
-		spatial: parseSpatialFromFragment(fragment)
-	};
+	const temporal = parseTemporalFromFragment(fragment);
+	const spatial = parseSpatialFromFragment(fragment);
+
+	// Build result conditionally (exactOptionalPropertyTypes)
+	const result: ParsedAnnotationTarget = { source };
+	if (temporal) result.temporal = temporal;
+	if (spatial) result.spatial = spatial;
+	return result;
 }
 
 /**
@@ -199,11 +203,11 @@ function parseSpecificResourceTarget(
 	if (target.selector?.type === 'FragmentSelector' && target.selector.value) {
 		// Parse the selector value as a fragment
 		const fragmentResult = parseMediaFragment(`dummy#${target.selector.value}`);
-		return {
-			source,
-			temporal: fragmentResult.temporal,
-			spatial: fragmentResult.spatial
-		};
+		// Build result conditionally (exactOptionalPropertyTypes)
+		const result: ParsedAnnotationTarget = { source };
+		if (fragmentResult.temporal) result.temporal = fragmentResult.temporal;
+		if (fragmentResult.spatial) result.spatial = fragmentResult.spatial;
+		return result;
 	}
 
 	// No FragmentSelector - return just the source

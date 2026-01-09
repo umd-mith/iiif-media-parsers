@@ -1,5 +1,5 @@
 /**
- * Export verification tests for LDA-1262
+ * Export verification tests
  *
  * Verifies that all expected types and functions are correctly exported
  * and usable by consumers of the package.
@@ -15,6 +15,7 @@ import {
 	type SpatialFragment,
 	type ParsedAnnotationTarget,
 	type AnnotationTargetInput,
+	type IIIFResourceType,
 	// Functions
 	parseRanges,
 	parseSpeakers,
@@ -82,6 +83,14 @@ describe('Public API exports', () => {
 				selector: { type: 'FragmentSelector', value: 't=10,20' }
 			};
 			expect(input.type).toBe('SpecificResource');
+		});
+
+		test('IIIFResourceType restricts to valid IIIF types', () => {
+			const types: IIIFResourceType[] = ['Canvas', 'Image', 'Sound', 'Video'];
+			expect(types).toHaveLength(4);
+			// TypeScript ensures only valid literals are assignable
+			const canvas: IIIFResourceType = 'Canvas';
+			expect(canvas).toBe('Canvas');
 		});
 	});
 

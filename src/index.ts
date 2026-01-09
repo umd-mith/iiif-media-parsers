@@ -13,7 +13,8 @@ export type {
 	TemporalFragment,
 	SpatialFragment,
 	ParsedAnnotationTarget,
-	AnnotationTargetInput
+	AnnotationTargetInput,
+	IIIFResourceType
 } from './types.js';
 
 // Parsers

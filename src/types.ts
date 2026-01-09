@@ -119,6 +119,12 @@ export interface ParsedAnnotationTarget {
 }
 
 /**
+ * IIIF content resource types that can be annotation targets.
+ * @see https://iiif.io/api/presentation/3.0/#55-annotation-page
+ */
+export type IIIFResourceType = 'Canvas' | 'Image' | 'Sound' | 'Video';
+
+/**
  * Input type for annotation targets.
  * Can be a simple string URI or a SpecificResource object.
  */
@@ -126,7 +132,7 @@ export type AnnotationTargetInput =
 	| string
 	| {
 			type: 'SpecificResource';
-			source: string | { id: string; type?: 'Canvas' | string };
+			source: string | { id: string; type?: IIIFResourceType };
 			selector?: {
 				type: 'FragmentSelector' | string;
 				value?: string;
