@@ -2,9 +2,10 @@
 set -euo pipefail
 
 # Release script for @umd-mith/iiif-media-parsers
-# Usage: ./scripts/release.sh [--dry-run] [version]
+# Usage: ./scripts/release.sh [--dry-run] [--no-publish] [version]
 # Example: ./scripts/release.sh 0.2.0
 #          ./scripts/release.sh --dry-run 0.2.0
+#          ./scripts/release.sh --no-publish 0.2.0  # tag only, skip npm publish
 
 cd "$(dirname "$0")/.."
 
@@ -16,6 +17,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 DRY_RUN=false
+NO_PUBLISH=false
 
 info() { echo -e "${GREEN}==>${NC} $1"; }
 warn() { echo -e "${YELLOW}==>${NC} $1"; }
@@ -36,6 +38,10 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         --dry-run)
             DRY_RUN=true
+            shift
+            ;;
+        --no-publish)
+            NO_PUBLISH=true
             shift
             ;;
         -*)
@@ -76,7 +82,11 @@ echo "  - Update package.json"
 echo "  - Update CHANGELOG.md"
 echo "  - Commit and tag v$NEW_VERSION"
 echo "  - Push to origin"
-echo "  - Publish to npm"
+if [[ "$NO_PUBLISH" == true ]]; then
+    echo "  - Publish to npm (SKIPPED)"
+else
+    echo "  - Publish to npm"
+fi
 echo ""
 read -rp "Proceed? [y/N] " CONFIRM
 if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
@@ -148,13 +158,21 @@ run git push origin "$BRANCH"
 run git push origin "v$NEW_VERSION"
 
 # Publish
-info "Publishing to npm..."
-run pnpm publish --access public
+if [[ "$NO_PUBLISH" == true ]]; then
+    warn "Skipping npm publish (--no-publish)"
+else
+    info "Publishing to npm..."
+    run pnpm publish --access public
+fi
 
 echo ""
 if [[ "$DRY_RUN" == true ]]; then
     info "Dry run complete for v$NEW_VERSION"
     echo "  Run without --dry-run to execute"
+elif [[ "$NO_PUBLISH" == true ]]; then
+    info "Tagged v$NEW_VERSION (not published to npm)"
+    echo "  - GitHub: https://github.com/umd-mith/iiif-media-parsers/releases/tag/v$NEW_VERSION"
+    echo "  - To publish later: pnpm publish --access public"
 else
     info "Released v$NEW_VERSION"
     echo "  - npm: https://www.npmjs.com/package/@umd-mith/iiif-media-parsers"
