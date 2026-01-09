@@ -486,9 +486,9 @@ describe('parseRanges', () => {
 			expect(chapters).toEqual([]);
 		});
 
-		it('should skip start-only temporal fragments (W3C compliant but unusable for chapters)', () => {
+		it('should resolve open-ended temporal fragments using canvas duration', () => {
 			// Per W3C Media Fragments spec, #t=10 is valid (end time optional)
-			// However, we cannot create chapters without knowing end time
+			// We resolve end time from canvas duration
 			const manifest = {
 				'@context': 'http://iiif.io/api/presentation/3/context.json',
 				id: 'https://example.org/manifest.json',
@@ -505,7 +505,7 @@ describe('parseRanges', () => {
 					{
 						id: 'https://example.org/range/1',
 						type: 'Range',
-						label: { en: ['Start Only'] },
+						label: { en: ['Open Ended'] },
 						items: [
 							{
 								id: 'https://example.org/canvas/1#t=10',
@@ -529,11 +529,61 @@ describe('parseRanges', () => {
 
 			const chapters = parseRanges(manifest);
 
-			// Should skip start-only fragment, return only complete range
+			// Both chapters should be returned, sorted by startTime
+			expect(chapters).toHaveLength(2);
+			expect(chapters[0]?.label).toBe('Open Ended');
+			expect(chapters[0]?.startTime).toBe(10);
+			expect(chapters[0]?.endTime).toBe(300); // Resolved from canvas duration
+			expect(chapters[1]?.label).toBe('Complete Range');
+			expect(chapters[1]?.startTime).toBe(30);
+			expect(chapters[1]?.endTime).toBe(60);
+		});
+
+		it('should skip open-ended fragments when canvas duration unavailable', () => {
+			// When canvas has no duration, we cannot resolve open-ended fragments
+			const manifest = {
+				'@context': 'http://iiif.io/api/presentation/3/context.json',
+				id: 'https://example.org/manifest.json',
+				type: 'Manifest',
+				label: { en: ['Test Manifest'] },
+				items: [
+					{
+						id: 'https://example.org/canvas/1',
+						type: 'Canvas'
+						// No duration!
+					}
+				],
+				structures: [
+					{
+						id: 'https://example.org/range/1',
+						type: 'Range',
+						label: { en: ['Open Ended'] },
+						items: [
+							{
+								id: 'https://example.org/canvas/1#t=10',
+								type: 'Canvas'
+							}
+						]
+					},
+					{
+						id: 'https://example.org/range/2',
+						type: 'Range',
+						label: { en: ['Complete Range'] },
+						items: [
+							{
+								id: 'https://example.org/canvas/1#t=30,60',
+								type: 'Canvas'
+							}
+						]
+					}
+				]
+			};
+
+			const chapters = parseRanges(manifest);
+
+			// Open-ended fragment skipped (no duration), only complete range returned
 			expect(chapters).toHaveLength(1);
 			expect(chapters[0]?.label).toBe('Complete Range');
-			expect(chapters[0]?.startTime).toBe(30);
-			expect(chapters[0]?.endTime).toBe(60);
 		});
 
 		it('should handle missing label gracefully with fallback', () => {

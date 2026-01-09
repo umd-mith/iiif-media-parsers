@@ -33,19 +33,15 @@ describe('IIIF Cookbook Conformance', () => {
 			expect(firstSection?.endTime).toBeCloseTo(302.05, 1);
 		});
 
-		it('should skip open-ended temporal fragments (requires endTime)', () => {
+		it('should resolve open-ended temporal fragments from canvas duration', () => {
 			const chapters = parseRanges(operaSingleCanvas);
 
-			// "Atto Secondo" uses #t=3971.24 (no end time) which is skipped
-			// because Chapter.endTime is required - we cannot determine bounds
+			// "Atto Secondo" uses #t=3971.24 (no end time)
+			// End time is resolved from canvas duration (7278.422)
 			const actTwo = chapters.find((c) => c.label.toLowerCase().includes('atto secondo'));
-			expect(actTwo).toBeUndefined();
-
-			// Only chapters with explicit end times are returned
-			const validChapters = chapters.filter(
-				(c) => c.endTime !== undefined && c.endTime > c.startTime
-			);
-			expect(validChapters.length).toBe(chapters.length);
+			expect(actTwo).toBeDefined();
+			expect(actTwo?.startTime).toBeCloseTo(3971.24, 1);
+			expect(actTwo?.endTime).toBeCloseTo(7278.422, 1); // Canvas duration
 		});
 
 		it('should preserve Italian labels from manifest', () => {

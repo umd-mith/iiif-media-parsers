@@ -18,6 +18,17 @@ interface IIIFManifest {
 	type: string;
 	label?: Record<string, string[]>;
 	structures?: IIIFRange[];
+	items?: IIIFCanvas[];
+	[key: string]: unknown;
+}
+
+/**
+ * IIIF Canvas with duration for time-based media
+ */
+interface IIIFCanvas {
+	id: string;
+	type: string;
+	duration?: number;
 	[key: string]: unknown;
 }
 
@@ -79,9 +90,12 @@ export function parseRanges(manifest: IIIFManifest): Chapter[] {
 
 	const chapters: Chapter[] = [];
 
+	// Build canvas duration lookup map for resolving open-ended fragments
+	const canvasDurations = buildCanvasDurationMap(manifest.items);
+
 	// Process each top-level range
 	for (const range of manifest.structures) {
-		processRange(range, chapters);
+		processRange(range, chapters, canvasDurations);
 	}
 
 	// Sort chapters by startTime for consistent ordering
@@ -94,8 +108,13 @@ export function parseRanges(manifest: IIIFManifest): Chapter[] {
  *
  * @param range - IIIF Range object
  * @param chapters - Accumulator array for discovered chapters
+ * @param canvasDurations - Map of canvas IDs to durations for resolving open-ended fragments
  */
-function processRange(range: IIIFRange, chapters: Chapter[]): void {
+function processRange(
+	range: IIIFRange,
+	chapters: Chapter[],
+	canvasDurations: Map<string, number>
+): void {
 	if (!range || !range.items || range.items.length === 0) {
 		return;
 	}
@@ -107,7 +126,7 @@ function processRange(range: IIIFRange, chapters: Chapter[]): void {
 
 	if (temporalItems.length > 0) {
 		// This range has temporal fragments - create a chapter
-		const chapter = createChapterFromRange(range, temporalItems);
+		const chapter = createChapterFromRange(range, temporalItems, canvasDurations);
 		if (chapter) {
 			chapters.push(chapter);
 		}
@@ -116,7 +135,7 @@ function processRange(range: IIIFRange, chapters: Chapter[]): void {
 	// Recursively process nested ranges
 	const nestedRanges = range.items.filter((item): item is IIIFRange => item.type === 'Range');
 	for (const nestedRange of nestedRanges) {
-		processRange(nestedRange, chapters);
+		processRange(nestedRange, chapters, canvasDurations);
 	}
 }
 
@@ -124,13 +143,19 @@ function processRange(range: IIIFRange, chapters: Chapter[]): void {
  * Creates a Chapter object from a Range with temporal fragments.
  *
  * Extracts start and end times from the first temporal fragment in the range.
+ * For open-ended fragments (no end time), resolves end from canvas duration.
  * Supports float timestamps and handles malformed fragments gracefully.
  *
  * @param range - IIIF Range object
  * @param items - Array of Canvas items with temporal fragments
+ * @param canvasDurations - Map of canvas IDs to durations
  * @returns Chapter object or null if parsing fails
  */
-function createChapterFromRange(range: IIIFRange, items: IIIFRangeItem[]): Chapter | null {
+function createChapterFromRange(
+	range: IIIFRange,
+	items: IIIFRangeItem[],
+	canvasDurations: Map<string, number>
+): Chapter | null {
 	// Use first temporal fragment for timing
 	const firstItem = items[0];
 	if (!firstItem) {
@@ -142,6 +167,19 @@ function createChapterFromRange(range: IIIFRange, items: IIIFRangeItem[]): Chapt
 		return null;
 	}
 
+	// Resolve end time for open-ended fragments using canvas duration
+	let endTime = timing.end;
+	if (endTime === undefined) {
+		const canvasId = extractCanvasId(firstItem.id);
+		const duration = canvasDurations.get(canvasId);
+		if (duration !== undefined) {
+			endTime = duration;
+		} else {
+			// Cannot determine end time - skip this chapter
+			return null;
+		}
+	}
+
 	const label = extractLabel(range.label);
 	const thumbnail = extractThumbnail(range.thumbnail);
 	const metadata = extractMetadata(range.metadata);
@@ -150,7 +188,7 @@ function createChapterFromRange(range: IIIFRange, items: IIIFRangeItem[]): Chapt
 		id: range.id,
 		label,
 		startTime: timing.start,
-		endTime: timing.end,
+		endTime,
 		thumbnail,
 		metadata
 	};
@@ -171,42 +209,70 @@ function hasTemporalFragment(canvasId: string): boolean {
  *
  * Parses Media Fragments per W3C Media Fragments URI spec:
  * - `#t=10,20` - start and end times
- * - `#t=10` - start time only (end defaults to media duration)
+ * - `#t=10` - start time only (end resolved from canvas duration)
  * - `#t=10.5,25.75` - floating point precision supported
  *
- * Note: End time is required for Chapter extraction. Start-only fragments
- * cannot be converted to chapters without knowing media duration.
- *
  * @param canvasId - Canvas ID with temporal fragment
- * @returns Object with start and end times, or null if malformed/incomplete
+ * @returns Object with start and optional end times, or null if malformed
  *
  * @see https://www.w3.org/TR/media-frags/#naming-time
  */
-function extractTemporalFragment(canvasId: string): { start: number; end: number } | null {
+function extractTemporalFragment(canvasId: string): { start: number; end?: number } | null {
 	// W3C Media Fragments spec: t=start[,end]
-	// End time is optional in spec, but required for Chapter extraction
 	const match = canvasId.match(/#t=([0-9.]+)(?:,([0-9.]+))?$/);
 	if (!match) {
 		return null;
 	}
 
 	const start = parseFloat(match[1]!);
-	const endStr = match[2];
-
-	// For chapters, we need both start and end times
-	if (!endStr) {
-		// Start-only fragment - cannot create chapter without duration
+	if (isNaN(start) || start < 0) {
 		return null;
 	}
 
-	const end = parseFloat(endStr);
+	const endStr = match[2];
+	if (!endStr) {
+		// Open-ended fragment - end will be resolved from canvas duration
+		return { start };
+	}
 
-	// Validate parsed values
-	if (isNaN(start) || isNaN(end) || start < 0 || end <= start) {
+	const end = parseFloat(endStr);
+	if (isNaN(end) || end <= start) {
 		return null;
 	}
 
 	return { start, end };
+}
+
+/**
+ * Builds a map of canvas IDs to their durations for resolving open-ended fragments.
+ *
+ * @param canvases - Array of IIIF Canvas objects from manifest.items
+ * @returns Map of canvas ID to duration
+ */
+function buildCanvasDurationMap(canvases?: IIIFCanvas[]): Map<string, number> {
+	const map = new Map<string, number>();
+	if (!canvases) {
+		return map;
+	}
+
+	for (const canvas of canvases) {
+		if (canvas.id && canvas.duration !== undefined) {
+			map.set(canvas.id, canvas.duration);
+		}
+	}
+
+	return map;
+}
+
+/**
+ * Extracts the base canvas ID from a URI with fragment.
+ *
+ * @param canvasIdWithFragment - Canvas ID possibly containing fragment (e.g., "canvas#t=10")
+ * @returns Base canvas ID without fragment
+ */
+function extractCanvasId(canvasIdWithFragment: string): string {
+	const hashIndex = canvasIdWithFragment.indexOf('#');
+	return hashIndex === -1 ? canvasIdWithFragment : canvasIdWithFragment.slice(0, hashIndex);
 }
 
 /**

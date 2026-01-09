@@ -106,6 +106,9 @@ const chapters = parseRanges(manifest);
 
 **Returns:** `Chapter[]` - Array of chapters sorted by startTime
 
+**Note:** Open-ended temporal fragments (e.g., `#t=3971.24` without end time) are resolved using
+the referenced canvas's `duration` property. If the canvas has no duration, the range is skipped.
+
 ### parseSpeakers(vttContent)
 
 Extracts speaker segments from WebVTT voice tags (`<v>`).
