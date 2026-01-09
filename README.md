@@ -3,17 +3,40 @@
 [![CI](https://github.com/umd-mith/iiif-media-parsers/actions/workflows/ci.yml/badge.svg)](https://github.com/umd-mith/iiif-media-parsers/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@umd-mith/iiif-media-parsers)](https://www.npmjs.com/package/@umd-mith/iiif-media-parsers)
 
-Lightweight TypeScript utilities for parsing IIIF time-based media structures,
-W3C Media Fragments, and WebVTT speaker annotations.
+Timing-focused utilities for IIIF time-based media—extracting chapters with
+temporal bounds from Range structures, speaker segments from WebVTT, and media
+fragments from annotation targets.
+
+## Why This Package?
+
+Existing IIIF libraries provide structure traversal but not the **temporal data**
+needed for A/V player integration:
+
+| Library                                                | What it provides                 | What's missing                         |
+| ------------------------------------------------------ | -------------------------------- | -------------------------------------- |
+| [@iiif/parser](https://github.com/IIIF-Commons/parser) | Range traversal, v2→v3 upgrade   | No `{startTime, endTime}` extraction   |
+| [cozy-iiif](https://github.com/rsimon/cozy-iiif)       | `getTableOfContents()` hierarchy | Labels only, no timing data            |
+| [vtt-utils](https://github.com/VoctroLabs/vtt-utils)   | `getSpeakers()` from WebVTT      | Returns `String[]` only, no timestamps |
+
+This package fills the gap by returning **playable, seekable segments**:
+
+```typescript
+// Other libraries: hierarchy without timing
+cozyManifest.getTableOfContents(); // → { label, children }
+
+// This library: timing for player integration
+parseRanges(manifest); // → [{ label, startTime: 0, endTime: 302.05 }, ...]
+```
 
 ## Features
 
-- Parse IIIF Range structures into chapter data
-- Extract speaker segments from WebVTT voice tags
-- Parse W3C Media Fragment URIs (temporal + spatial)
+- **Chapters with timing** - Parse IIIF Range structures into `{startTime, endTime}` data
+- **Speaker segments** - Extract WebVTT voice tags with merged consecutive cues
+- **Annotation targets** - Parse SpecificResource/FragmentSelector with temporal+spatial support
 - Zero runtime dependencies
 - Full TypeScript support with strict types
 - ESM-only, tree-shakeable
+- Tested against [IIIF Cookbook](https://iiif.io/api/cookbook/) examples
 
 ## Getting Started
 
