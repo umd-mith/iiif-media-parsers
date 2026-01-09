@@ -248,6 +248,22 @@ interface ParsedAnnotationTarget {
 }
 ```
 
+### AnnotationTargetInput
+
+```typescript
+type AnnotationTargetInput =
+	| string // Simple URI with fragment (e.g., "canvas#t=10,20")
+	| {
+			type: 'SpecificResource';
+			source: string | { id: string; type?: string };
+			selector?: {
+				type: string;
+				value?: string;
+				conformsTo?: string;
+			};
+	  };
+```
+
 ## Examples
 
 ### Oral History Interview Navigation
