@@ -480,4 +480,4 @@ Assisted-by: Claude <noreply@anthropic.com>
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+The Clear BSD License (SPDX: BSD-3-Clause-Clear) - see [LICENSE](LICENSE) for details.
