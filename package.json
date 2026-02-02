@@ -45,6 +45,7 @@
 		"lint:fix": "eslint src/ --fix",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
+		"build:docs": "node scripts/build-docs.js",
 		"release": "./scripts/release.sh",
 		"prepublishOnly": "pnpm run build && pnpm run test:ci",
 		"prepare": "husky"

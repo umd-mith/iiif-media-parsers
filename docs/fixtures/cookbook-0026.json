@@ -1,0 +1,84 @@
+{
+	"name": "Cookbook Recipe 0026: Table of Contents (Single Canvas)",
+	"sourceFile": "src/fixtures/cookbook-0026-opera-toc.json",
+	"chapterCount": 3,
+	"chapters": [
+		{
+			"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/range/3",
+			"label": "Preludio e Coro d'introduzione – Bel conforto al mietitore",
+			"startTime": "0:00",
+			"endTime": "5:02.05"
+		},
+		{
+			"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/range/4",
+			"label": "Remainder of Atto Primo",
+			"startTime": "5:02.05",
+			"endTime": "1:06:11.24"
+		},
+		{
+			"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/range/5",
+			"label": "Atto Secondo",
+			"startTime": "1:06:11.24",
+			"endTime": "2:01:18.422"
+		}
+	],
+	"structures": [
+		{
+			"type": "Range",
+			"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/range/1",
+			"label": {
+				"it": ["Gaetano Donizetti, L'Elisir D'Amore"]
+			},
+			"items": [
+				{
+					"type": "Range",
+					"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/range/2",
+					"label": {
+						"it": ["Atto Primo"]
+					},
+					"items": [
+						{
+							"type": "Range",
+							"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/range/3",
+							"label": {
+								"it": ["Preludio e Coro d'introduzione – Bel conforto al mietitore"]
+							},
+							"items": [
+								{
+									"type": "Canvas",
+									"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/canvas/1#t=0,302.05"
+								}
+							]
+						},
+						{
+							"type": "Range",
+							"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/range/4",
+							"label": {
+								"en": ["Remainder of Atto Primo"]
+							},
+							"items": [
+								{
+									"type": "Canvas",
+									"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/canvas/1#t=302.05,3971.24"
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "Range",
+					"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/range/5",
+					"label": {
+						"it": ["Atto Secondo"]
+					},
+					"items": [
+						{
+							"type": "Canvas",
+							"id": "https://iiif.io/api/cookbook/recipe/0026-toc-opera/canvas/1#t=3971.24"
+						}
+					]
+				}
+			]
+		}
+	]
+}
