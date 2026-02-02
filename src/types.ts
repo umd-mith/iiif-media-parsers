@@ -105,22 +105,16 @@ export interface SpatialFragment {
  * - Simple string URIs: `"https://example.org/canvas#t=10,20"`
  * - SpecificResource with FragmentSelector
  *
- * Per the W3C Media Fragments spec, invalid fragments are silently
- * ignored (e.g., `#t=5600,60` where start > end). When a fragment is
- * present in the URI but fails validation, the corresponding field is
- * `undefined` — indistinguishable from a URI with no such fragment.
- *
  * @see https://iiif.io/api/presentation/3.0/#annotation
- * @see https://www.w3.org/TR/media-frags/#error-handling
  */
 export interface ParsedAnnotationTarget {
 	/** Canvas or source URI (without fragment) */
 	source: string;
 
-	/** Temporal fragment when successfully parsed; undefined if absent or invalid */
+	/** Temporal fragment if present (#t=...) */
 	temporal?: TemporalFragment;
 
-	/** Spatial fragment when successfully parsed; undefined if absent or invalid */
+	/** Spatial fragment if present (#xywh=...) */
 	spatial?: SpatialFragment;
 }
 
