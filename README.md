@@ -27,7 +27,12 @@ parseSpeakers(vttContent);
 - [maniiifest](https://github.com/jptmoore/maniiifest) — Zero-dependency general IIIF parsing
 - [cozy-iiif](https://github.com/rsimon/cozy-iiif) — Lightweight IIIF parsing utilities
 
-This package fills the **media-specific gap**: none of the above provide dedicated W3C Media Fragment parsing or WebVTT speaker extraction.
+**A/V players** (full-featured React player components):
+
+- [Ramp](https://github.com/samvera-labs/ramp) — IIIF Presentation 3.0 player by Samvera/Avalon
+- [aviary-iiif-player](https://github.com/WeAreAVP/aviary-iiif-player) — Aviary platform's React player component
+
+This package complements both layers: the general parsers handle manifest structure and normalization; the players handle rendering. This library extracts the **temporal data** between them—media fragment timing, speaker segments, annotation targets—as simple objects usable with any player or server-side pipeline.
 
 ## Features
 
