@@ -54,12 +54,6 @@ This package complements both layers: the general parsers handle manifest struct
 ### Installation
 
 ```bash
-npm install github:umd-mith/iiif-media-parsers
-```
-
-Once published to npm, you can also install via:
-
-```bash
 npm install @umd-mith/iiif-media-parsers
 ```
 

@@ -21,7 +21,7 @@
 		"url": "https://github.com/umd-mith/iiif-media-parsers.git"
 	},
 	"license": "BSD-3-Clause-Clear",
-	"author": "Maryland Institute for Technology in the Humanities (MITH)",
+	"author": "Trevor Munoz <tmunoz@umd.edu>",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
