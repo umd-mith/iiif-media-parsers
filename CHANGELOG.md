@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-02-18
+
+### Changed
+- License changed from MIT to BSD-3-Clause-Clear
+- Copyright holder updated to University of Maryland
+- TypeScript strictness increased (`exactOptionalPropertyTypes`, `IIIFResourceType`)
+
+### Added
+- GitHub Pages showcase site with live demos
+
+### Docs
+- README editorial pass and ecosystem context
+
 ## [0.2.0] - 2026-01-09
 
 ### Added
