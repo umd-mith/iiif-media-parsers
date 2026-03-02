@@ -119,10 +119,11 @@ export interface ParsedAnnotationTarget {
 }
 
 /**
- * IIIF content resource types that can be annotation targets.
+ * IIIF content resource types that can appear in annotation targets and bodies.
  * @see https://iiif.io/api/presentation/3.0/#55-annotation-page
+ * @see https://www.w3.org/TR/annotation-model/#bodies-and-targets
  */
-export type IIIFResourceType = 'Canvas' | 'Image' | 'Sound' | 'Video';
+export type IIIFResourceType = 'Canvas' | 'Image' | 'Sound' | 'Video' | 'Text' | 'Dataset';
 
 /**
  * Input type for annotation targets.

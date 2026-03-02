@@ -86,8 +86,8 @@ describe('Public API exports', () => {
 		});
 
 		test('IIIFResourceType restricts to valid IIIF types', () => {
-			const types: IIIFResourceType[] = ['Canvas', 'Image', 'Sound', 'Video'];
-			expect(types).toHaveLength(4);
+			const types: IIIFResourceType[] = ['Canvas', 'Image', 'Sound', 'Video', 'Text', 'Dataset'];
+			expect(types).toHaveLength(6);
 			// TypeScript ensures only valid literals are assignable
 			const canvas: IIIFResourceType = 'Canvas';
 			expect(canvas).toBe('Canvas');
