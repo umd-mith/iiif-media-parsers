@@ -58,9 +58,11 @@ function parseTemporalFromFragment(fragment: string): TemporalFragment | undefin
 		return undefined;
 	}
 
-	// Reject invalid temporal ordering: end must be greater than start
-	// This matches the validation in parseRanges.ts extractTemporalFragment
-	if (end !== undefined && end <= start) {
+	// Reject reversed ranges (end before start).
+	// Equal values (t=x,x) are accepted — AVAnnotate and other tools use
+	// this pattern for point-in-time annotations even though the W3C Media
+	// Fragments spec considers it an error (§6.2.2).
+	if (end !== undefined && end < start) {
 		return undefined;
 	}
 
@@ -132,7 +134,7 @@ function parseSpatialFromFragment(fragment: string): SpatialFragment | undefined
  * - No `#t=` fragment present in URI
  * - Fragment is malformed (`#t=invalid`, `#t=`)
  * - Values are negative (`#t=-5,20`)
- * - Time range is invalid (`#t=20,10` where end <= start)
+ * - Time range is reversed (`#t=20,10` where end < start)
  *
  * The `spatial` property is undefined when:
  * - No `#xywh=` fragment present in URI

@@ -73,7 +73,7 @@ interface IIIFRangeItem {
  * Ranges are silently skipped when:
  * - No Canvas items with temporal fragments
  * - Temporal fragment is malformed (non-numeric, negative values)
- * - Time range is invalid (`end <= start`)
+ * - Time range is reversed (`end < start`)
  * - Open-ended fragment (`#t=10`) without canvas duration to resolve end time
  *
  * @example
@@ -249,7 +249,7 @@ function extractTemporalFragment(canvasId: string): { start: number; end?: numbe
 	}
 
 	const end = parseFloat(endStr);
-	if (isNaN(end) || end <= start) {
+	if (isNaN(end) || end < start) {
 		return null;
 	}
 

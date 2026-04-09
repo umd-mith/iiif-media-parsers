@@ -74,11 +74,25 @@ describe('parseMediaFragment', () => {
 			expect(result.temporal).toBeUndefined();
 		});
 
-		it('should reject zero-duration fragment: #t=10,10', () => {
+		it('should accept equal start/end as point-in-time: #t=10,10', () => {
 			const result = parseMediaFragment('https://example.org/canvas#t=10,10');
 
 			expect(result.source).toBe('https://example.org/canvas');
-			expect(result.temporal).toBeUndefined();
+			expect(result.temporal).toEqual({ start: 10, end: 10 });
+		});
+
+		it('should accept zero-duration at start of media: #t=0,0', () => {
+			const result = parseMediaFragment('https://example.org/canvas#t=0,0');
+
+			expect(result.source).toBe('https://example.org/canvas');
+			expect(result.temporal).toEqual({ start: 0, end: 0 });
+		});
+
+		it('should accept AVAnnotate-style point annotation: #t=95,95', () => {
+			const result = parseMediaFragment('https://AVAnnotate.github.io/voices/canvas/3#t=95,95');
+
+			expect(result.source).toBe('https://AVAnnotate.github.io/voices/canvas/3');
+			expect(result.temporal).toEqual({ start: 95, end: 95 });
 		});
 
 		it('should handle URI with query parameters', () => {
