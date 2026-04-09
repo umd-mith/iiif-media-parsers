@@ -1,6 +1,6 @@
 {
 	"name": "@umd-mith/iiif-media-parsers",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"description": "TypeScript utilities for parsing IIIF media fragments, ranges, and WebVTT speaker annotations",
 	"keywords": [
 		"iiif",

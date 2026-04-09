@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-04-09
+
 ### Fixed
 - Accept equal start/end temporal fragments (`#t=95,95`). AVAnnotate and other tools use this pattern for point-in-time annotations. Previously rejected as invalid, now returns `{ start: 95, end: 95 }`. Reversed ranges (`#t=20,10`) are still rejected.
 
